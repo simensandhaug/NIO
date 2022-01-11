@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/NIO-JAVA.iml" filepath="$PROJECT_DIR$/.idea/NIO-JAVA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gjetteleken/gjetteleken.iml" filepath="$PROJECT_DIR$/gjetteleken/gjetteleken.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hyperion/hyperion.iml" filepath="$PROJECT_DIR$/hyperion/hyperion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scientist/scientist.iml" filepath="$PROJECT_DIR$/scientist/scientist.iml" />
+    </modules>
+  </component>
+</project>
