@@ -4,100 +4,76 @@ public class virussmitte {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
 
-        int antallInnbyggere = s.nextInt();
-        int antallMatcher = s.nextInt();
-        int inkubasjonstid = s.nextInt();
-        int smittetid = s.nextInt();
+        int nrOfCitizens = s.nextInt();
+        int nrOfMatches = s.nextInt();
+        int incubationTime = s.nextInt();
+        int sickTime = s.nextInt();
 
-
-        int[] smittede = new int[antallInnbyggere];
-        int[] inkubasjon = new int[antallInnbyggere];
-        int[] immune = new int[antallInnbyggere];
-        int[] sykFra = new int[antallInnbyggere];
-        int[] sykTil = new int[antallInnbyggere];
+        int[] sickFrom = new int[nrOfCitizens];
+        int[] sickTo = new int[nrOfCitizens];
+        Meeting[] møter = new Meeting[nrOfMatches];
 
         int biggest = 0;
-        int forrigeDag = 0;
-        int deltaDag = 0;
-        int sisteDag = 0;
+        int lastDay = 0;
 
-        inkubasjon[0] = inkubasjonstid;
-        sykFra[0] = inkubasjonstid;
-        sykTil[0] = inkubasjonstid + smittetid;
+        sickFrom[0] = incubationTime;
+        sickTo[0] = incubationTime + sickTime;
 
-        for(int i = 0; i < antallMatcher; i++) {
+        for(int i = 0; i < nrOfMatches; i++) {
             int a = s.nextInt();
             int b = s.nextInt();
-            int dag = s.nextInt();
+            int day = s.nextInt();
 
-            deltaDag = dag - forrigeDag;
-
-            for(int p = forrigeDag; p < dag; p++) {
-                //for alle innbyggere
-                //hvis smittede[innbygger] > 0 smittede[innbygger]-= deltaDag;
-                //hvis smittede[innbygger] == 0;
-                //immune[innbygger] = 1;
-                //hvis inkubasjon[innbygger] > 0 inkubasjon[innbygger]-= deltaDag;
-                //hvis inkubasjon[innbygger] == 0
-                //smittede[innbygger] = smittetid;
-                for (int k = 0; k < antallInnbyggere; k++) {
-                    if (smittede[k] > 0) {
-                        smittede[k] --;
-                        if (smittede[k] <= 0)
-                            immune[k] = 1;
-                    }
-
-                    if (inkubasjon[k] > 0) {
-                        inkubasjon[k] --;
-                        if (inkubasjon[k] <= 0)
-                            smittede[k] = smittetid;
-                    }
-                }
-
-                int antallSmittedeNow = 0;
-                for(int j = 0; j < antallInnbyggere; j++) {
-                    if(smittede[j] > 0) {
-                        antallSmittedeNow++;
-                    }
-                }
-                if(antallSmittedeNow > biggest){
-                    biggest = antallSmittedeNow;
-                }
-
-
-            }
-
-            //hvis a er smittet og b ikke er smittet og ikke immun, inkubasjon[b] = inkubasjonstid;
-            //hvis b er smittet og a ikke er smittet og ikke immun, inkubasjon[a] = inkubasjonstid;
-            if (smittede[a] > 0 && !(smittede[b] > 0) && immune[b] != 1 && inkubasjon[b] <= 0) {
-                inkubasjon[b] = inkubasjonstid;
-                sykFra[b] = dag + inkubasjonstid;
-                sykTil[b] = dag + inkubasjonstid + smittetid;
-            }
-
-            if (smittede[b] > 0 && !(smittede[a] > 0) && immune[a] != 1 && inkubasjon[a] <= 0) {
-                inkubasjon[a] = inkubasjonstid;
-                sykFra[a] = dag + inkubasjonstid;
-                sykTil[a] = dag + inkubasjonstid + smittetid;
-            }
-
-            forrigeDag = dag;
-
-            //System.out.println("Smittet: " + smittede[1] + " Inkubasjon: " + inkubasjon[1] + " Immun: " + immune[1] + " Dag: " + dag);
-            sisteDag = dag;
+            møter[i] = new Meeting(a, b, day);
         }
-        //finner der det er flest smittet samtidig
 
-/*        System.out.println(sykTil[0]);
-        for(int i = 0; i < sisteDag; i++) {
-            int antallDagI = 0;
-            for(int j = 0; j < antallInnbyggere; j++) {
-                if(sykFra[j] <= i && sykTil[j] >= i) {
-                    antallDagI++;
-                }
+        Arrays.sort(møter, (a, b) -> a.day - b.day);
+
+        //for(int i = 0; i < møter.length; i++) {
+            //System.out.println(møter[i].a + " " + møter[i].b + " " + møter[i].day);
+        //}
+
+        for(int i = 0; i < møter.length; i++) {
+            Meeting m = møter[i];
+            if(m.day >= sickFrom[m.a] && m.day < sickTo[m.a] && sickFrom[m.b] == 0) {
+                sickFrom[m.b] = m.day + incubationTime;
+                sickTo[m.b] = m.day + incubationTime + sickTime;
             }
-            biggest = Math.max(biggest, antallDagI);
-        }*/
+            if(m.day >= sickFrom[m.b] && m.day < sickTo[m.b] && sickFrom[m.a] == 0) {
+                sickFrom[m.a] = m.day + incubationTime;
+                sickTo[m.a] = m.day + incubationTime + sickTime;
+            }
+        }
+
+        lastDay = Arrays.stream(sickTo).max().getAsInt();
+
+        int[] sickArr = new int[lastDay];
+
+        for(int i = 0; i < nrOfCitizens; i++) {
+            int from = sickFrom[i];
+            int to = sickTo[i];
+
+            for(int k = from; k < to; k++) {
+                sickArr[k]++;
+            }
+        }
+
+        biggest = Arrays.stream(sickArr).max().getAsInt();
+
         System.out.println(biggest);
+        //System.out.println(Arrays.toString(sickFrom));
+        //System.out.println(Arrays.toString(sickTo));
+    }
+
+    public static class Meeting {
+        private int a;
+        private int b;
+        private int day;
+
+        public Meeting(int a, int b, int day) {
+            this.a = a;
+            this.b = b;
+            this.day = day;
+        }
     }
 }
